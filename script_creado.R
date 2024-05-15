@@ -1,6 +1,11 @@
 library(dplyr)
 library(readxl)
-mydata <- read_excel("/home/lsalvatore/Documents/FACULTAD/ProbabilidadYEstadistica2024/Prob_Datos_LP1.xlsx", col_names = FALSE, skip=3)
+mydata <- read_excel("/home/lsalvatore/Documents/FACULTAD/ProbabilidadYEstadistica2024/Prob_Datos_LP.xlsx", col_names = FALSE, skip=3)
+
+mydata <- mydata |>
+      select(   # Seleccionar las columnas que quiero conservar
+             "...1", "...2", "...3", "...19", "...20", "...21", "...22", "...23", "...24", "...25", "...26", "...28", "...43", "...44", "...45", "...46", "...47", "...48", "...50",  "...54", "...55", "...56", "...57", "...58", "...59", "...60", "...111", "...112", "...113" 
+         )
 
 colnames(mydata) <- c("OrdenInicial", # Cuantitativa Discreta
                       "Provincia", # Cualitativa Nominal
@@ -69,3 +74,6 @@ mydata_limpia <- mydata |>
       
        )
 )
+
+mydata_patagonia <-mydata_limpia %>%
+  filter(Provincia == "Río Negro" | Provincia == "Santa Cruz")
