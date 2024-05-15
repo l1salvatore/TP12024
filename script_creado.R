@@ -4,21 +4,16 @@ mydata <- read_excel("/home/lsalvatore/Documents/FACULTAD/ProbabilidadYEstadisti
 
 mydata <- mydata |>
       select(   # Seleccionar las columnas que quiero conservar
-             "...1", "...2", "...3", "...19", "...20", "...21", "...22", "...23", "...24", "...25", "...26", "...28", "...43", "...44", "...45", "...46", "...47", "...48", "...50",  "...54", "...55", "...56", "...57", "...58", "...59", "...60", "...111", "...112", "...113" 
+             "...1", "...2", "...3", "...5", "...24", "...25", "...26", "...43", "...44", "...45", "...46", "...47", "...48", "...50",  "...54", "...55", "...56", "...57", "...58", "...59", "...60", "...111", "...112", "...113" 
          )
 
 colnames(mydata) <- c("OrdenInicial", # Cuantitativa Discreta
                       "Provincia", # Cualitativa Nominal
                       "Barrio", # Cualitativa Nominal
-                      "TipoVivienda", # Cualitativa Nominal
-                      "TieneContratoAlquiler",  # Cualitativa Dicotómica
-                      "CostoAlquiler", # Cuantitativa Continua
-                      "CuantoAumentoAlquilerUltAño", # Cuantitativa Continua
-                      "PorcentajeAumentoAlquiler",  # Cuantitativa Continua
+                      "TiempoDeResidenciaEnAños", # Cuantitativa Continua
                       "FormaObtencionAgua", # Cualitativa Nominal
                       "SeConsumeAguaEmbotellada", # Cualitativa Dicotómica
                       "PresionAgua", 
-                      "LitrosAlmacenamientoAgua", 
                       "PoseeGasNatural", 
                       "PoseeGarrafa", 
                       "CocinaYCalefaccionPorElectricidad", 
@@ -54,7 +49,6 @@ mydata_limpia <- mydata |>
                        "A través de un pozo" = "Agua de pozo",
                        "Conexión a un tanque comunitario" = "Tanque comunitario"),
       PresionAgua = factor(PresionAgua, levels = c("Muy débil", "Débil", "Buena")),
-      LitrosAlmacenamientoAgua = factor(LitrosAlmacenamientoAgua, levels = c("Menos de 200 lts", "200 a 500 lts", "Más de 500 lts")),
       TipoConexionElectrica = recode(TipoConexionElectrica, "Conexión a través de un medidor a la red eléctrica" = "Con medidor en red",
                                   "Conexión sin medidor a una red eléctrica (“informal”)" = "Sin medidor, informalmente",
                                   "Conexión a través de un medidor comunitario a la red eléctrica" = "Con medidor comunitario",
