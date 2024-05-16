@@ -4,7 +4,7 @@ mydata <- read_excel("/home/lsalvatore/Documents/FACULTAD/ProbabilidadYEstadisti
 
 mydata <- mydata |>
       select(   # Seleccionar las columnas que quiero conservar
-             "...1", "...2", "...3", "...5", "...24", "...25", "...26", "...43", "...44", "...45", "...46", "...47", "...48", "...50",  "...54", "...55", "...56", "...57", "...58", "...59", "...60", "...111", "...112", "...113" 
+             "...1", "...2", "...3", "...5", "...24", "...25", "...26", "...38", "...39", "...40", "...41", "...42", "...43", "...44", "...45", "...46", "...47", "...48", "...50",  "...54", "...55", "...56", "...57", "...58", "...59", "...60", "...111", "...112", "...113" 
          )
 
 colnames(mydata) <- c("OrdenInicial", # Cuantitativa Discreta
@@ -14,11 +14,16 @@ colnames(mydata) <- c("OrdenInicial", # Cuantitativa Discreta
                       "FormaObtencionAgua", # Cualitativa Nominal
                       "SeConsumeAguaEmbotellada", # Cualitativa Dicotómica
                       "PresionAgua", 
-                      "PoseeGasNatural", 
-                      "PoseeGarrafa", 
-                      "CocinaYCalefaccionPorElectricidad", 
-                      "PoseeLeñaCarbon",
-                      "NoPoseeGas", 
+                      "PoseeGasNaturalParaCocina", 
+                      "PoseeGarrafaParaCocina", 
+                      "ElectricidadParaCocina", 
+                      "PoseeLeñaCarbonParaCocina",
+                      "NoTieneParaCocina",
+                      "PoseeGasNaturalParaCalefaccion", 
+                      "PoseeGarrafaParaCalefaccion", 
+                      "ElectricidadParaCalefaccion", 
+                      "PoseeLeñaCarbonParaCalefaccion",
+                      "NoTieneParaCalefaccion", 
                       "NoNecesitaCalefaccionar",
                       "TipoConexionElectrica", 
                       "EsFrecuenteLosCortesEnVerano", 
@@ -34,11 +39,16 @@ colnames(mydata) <- c("OrdenInicial", # Cuantitativa Discreta
 mydata <- data.frame(mydata)
 mydata_limpia <- mydata |>
     mutate(
-      PoseeGasNatural = ifelse(PoseeGasNatural == 'Gas natural (red de gas)' & !is.na(PoseeGasNatural), 1, 0),
-      PoseeGarrafa = ifelse(PoseeGarrafa == 'Gas envasado (garrafa)'& !is.na(PoseeGarrafa), 1, 0),
-      CocinaYCalefaccionPorElectricidad = ifelse(CocinaYCalefaccionPorElectricidad == 'Electricidad'& !is.na(CocinaYCalefaccionPorElectricidad), 1, 0),
-      PoseeLeñaCarbon = ifelse(PoseeLeñaCarbon == 'Leña/Carbón' & !is.na(PoseeLeñaCarbon), 1, 0),
-      NoPoseeGas = ifelse(NoPoseeGas == 'No tengo para calefaccionar mi vivienda' & !is.na(NoPoseeGas), 1, 0),
+      PoseeGasNaturalParaCocina = ifelse(PoseeGasNaturalParaCocina == 'Gas natural (red de gas)' & !is.na(PoseeGasNaturalParaCocina), 1, 0),
+      PoseeGarrafaParaCocina = ifelse(PoseeGarrafaParaCocina == 'Gas natural (red de gas)'& !is.na(PoseeGarrafaParaCocina), 1, 0),
+      ElectricidadParaCocina = ifelse(ElectricidadParaCocina == 'Electricidad'& !is.na(ElectricidadParaCocina), 1, 0),
+      PoseeLeñaCarbonParaCocina = ifelse(PoseeLeñaCarbonParaCocina == 'Leña/Carbón' & !is.na(PoseeLeñaCarbonParaCocina), 1, 0),
+      NoTieneParaCocina = ifelse(NoTieneParaCocina == 'No tengo para cocinar en mi vivienda' & !is.na(NoTieneParaCocina), 1, 0),
+      PoseeGasNaturalParaCalefaccion = ifelse(PoseeGasNaturalParaCalefaccion == 'Gas natural (red de gas)' & !is.na(PoseeGasNaturalParaCalefaccion), 1, 0),
+      PoseeGarrafaParaCalefaccion = ifelse(PoseeGarrafaParaCalefaccion == 'Gas envasado (garrafa)'& !is.na(PoseeGarrafaParaCalefaccion), 1, 0),
+      ElectricidadParaCalefaccion = ifelse(ElectricidadParaCalefaccion == 'Electricidad'& !is.na(ElectricidadParaCalefaccion), 1, 0),
+      PoseeLeñaCarbonParaCalefaccion = ifelse(PoseeLeñaCarbonParaCalefaccion == 'Leña/Carbón' & !is.na(PoseeLeñaCarbonParaCalefaccion), 1, 0),
+      NoTieneParaCalefaccion = ifelse(NoTieneParaCalefaccion == 'No tengo para calefaccionar mi vivienda' & !is.na(NoTieneParaCalefaccion), 1, 0),
       NoNecesitaCalefaccionar = ifelse(NoNecesitaCalefaccionar == 'No necesito calefaccionar mi vivienda en ninguna época del año' & !is.na(NoNecesitaCalefaccionar), 1, 0),
       # Recodifico las etiquetas de una variable categórica
       FormaObtencionAgua = recode(FormaObtencionAgua, "No sabe" = "No sabe",
