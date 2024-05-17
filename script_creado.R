@@ -4,7 +4,7 @@ mydata <- read_excel("/home/lsalvatore/Documents/FACULTAD/ProbabilidadYEstadisti
 
 mydata <- mydata |>
       select(   # Seleccionar las columnas que quiero conservar
-             "...1", "...2", "...3", "...5", "...24", "...25", "...26", "...38", "...39", "...40", "...41", "...42", "...43", "...44", "...45", "...46", "...47", "...48", "...50",  "...54", "...55", "...56", "...57", "...58", "...59", "...60", "...111", "...112", "...113" 
+             "...1", "...2", "...3", "...5", "...24", "...25", "...38", "...39", "...40", "...41", "...42", "...43", "...44", "...45", "...46", "...47", "...48", "...50",  "...56", "...57", "...58", "...59", "...60", "...111", "...112", "...113" 
          )
 
 colnames(mydata) <- c("OrdenInicial", # Cuantitativa Discreta
@@ -13,7 +13,6 @@ colnames(mydata) <- c("OrdenInicial", # Cuantitativa Discreta
                       "TiempoDeResidenciaEnAños", # Cuantitativa Continua
                       "FormaObtencionAgua", # Cualitativa Nominal
                       "SeConsumeAguaEmbotellada", # Cualitativa Dicotómica
-                      "PresionAgua", 
                       "PoseeGasNaturalParaCocina", 
                       "PoseeGarrafaParaCocina", 
                       "ElectricidadParaCocina", 
@@ -26,9 +25,7 @@ colnames(mydata) <- c("OrdenInicial", # Cuantitativa Discreta
                       "NoTieneParaCalefaccion", 
                       "NoNecesitaCalefaccionar",
                       "TipoConexionElectrica", 
-                      "EsFrecuenteLosCortesEnVerano", 
-                      "EsFrecuenteLosCortesEnInvierno", 
-                      "PoseeServicioInternatBandaAncha", 
+                      "TipoDeInternetEnElHogar", 
                       "HayAlMenosUnCelularConInternet",
                       "N_Abonos", 
                       "N_Computadoras", 
@@ -58,14 +55,11 @@ mydata_limpia <- mydata |>
                        "No poseo agua dentro de la vivienda y/o tengo que acarrear desde fuera del terreno en que se ubica mi vivienda"  = "No posee agua, consume agua externa",
                        "A través de un pozo" = "Agua de pozo",
                        "Conexión a un tanque comunitario" = "Tanque comunitario"),
-      PresionAgua = factor(PresionAgua, levels = c("Muy débil", "Débil", "Buena")),
       TipoConexionElectrica = recode(TipoConexionElectrica, "Conexión a través de un medidor a la red eléctrica" = "Con medidor en red",
                                   "Conexión sin medidor a una red eléctrica (“informal”)" = "Sin medidor, informalmente",
                                   "Conexión a través de un medidor comunitario a la red eléctrica" = "Con medidor comunitario",
                                   "No posee conexión a la red eléctrica en la vivienda" = "No tiene acceso a la red eléctrica"),
-      EsFrecuenteLosCortesEnVerano = factor(EsFrecuenteLosCortesEnVerano, levels = c("Más de 4 cortes mensuales", "Por lo menos 3 cortes en el mes",  "Por lo menos 2 cortes en el mes", "Por lo menos 1 corte en el mes", "No son frecuentes")),
-      EsFrecuenteLosCortesEnInvierno = factor(EsFrecuenteLosCortesEnInvierno, levels = c("Más de 4 cortes mensuales", "Por lo menos 3 cortes en el mes",  "Por lo menos 2 cortes en el mes", "Por lo menos 1 corte en el mes", "No son frecuentes")),
-      PoseeServicioInternatBandaAncha = recode(PoseeServicioInternatBandaAncha, "Si inálambrico/satelital" = "Inalámbrico/Satelital",
+      TipoDeInternetEnElHogar = recode(TipoDeInternetEnElHogar, "Si inálambrico/satelital" = "Inalámbrico/Satelital",
                                   "No poseo internet de banda ancha" = "No posee",
                                   "Si a través de cable (coaxial o ADSL)" = "Cableado (Coaxil/ADSL)",
                                   "Si a través de fibra óptica" = "Fibra Optica",
@@ -79,5 +73,14 @@ mydata_limpia <- mydata |>
        )
 )
 
-mydata_patagonia <-mydata_limpia %>%
-  filter(Provincia == "Río Negro" | Provincia == "Santa Cruz")
+
+
+
+#GRAFICOS
+
+tableFormaObtencionAguaConteo <- table(mydata_limpia$FormaObtencionAgua)
+barplot(tableFormaObtencionAguaConteo, cex.names = 0.45)
+
+tableSinMedidorDeAgua <- mydata_limpia %>% 
+  filter(FormaObtencionAgua %in% c('Sin medidor, informalmente'))
+barplot(table(tableSinMedidorDeAgua$Provincia), cex.names=0.45)
