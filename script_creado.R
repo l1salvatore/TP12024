@@ -78,7 +78,30 @@ datos_base <- datos |>
 
 
 
+#Buenos Aires         CABA        Chaco      Córdoba   Corrientes   Entre Ríos      Formosa        Jujuy     La Rioja      Mendoza     Misiones 
+#292          235           36           52           51           27           40           56           30           60          109 
+#Río Negro   Santa Cruz     Santa Fe     Santiago      Tucumán 
+#70           52           40           32           40 
 
+#Debido a que hay una tendencia favorable a Buenos Aires en cuanto a datos, se intenta filtrar y seleccionar el mínimo de hogares por cada provincia
+#En este caso, nos adaptamos a Entre rios, que tiene 27 hogares consultados, entonces hacemos un sample de 27 hogares 
+filtered <- datos_base[sample( which (datos_base$Provincia == "Buenos Aires"), 27), ]
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "CABA"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "Chaco"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "Córdoba"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "Corrientes"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "Entre Ríos"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "Formosa"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "Jujuy"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "La Rioja"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "Mendoza"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "Misiones"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "Río Negro"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "Santa Cruz"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "Santa Fe"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "Santiago"), 27), ])
+filtered <- rbind(filtered, datos_base[sample( which (datos_base$Provincia == "Tucumán"), 27), ])
+datos_base <- filtered
 #GRAFICOS
 
 #SERVICIO DE AGUA
