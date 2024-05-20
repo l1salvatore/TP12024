@@ -1,13 +1,16 @@
 library(dplyr)
 library(readxl)
-mydata <- read_excel("/home/lsalvatore/Documents/FACULTAD/ProbabilidadYEstadistica2024/Prob_Datos_LP.xlsx", col_names = FALSE, skip=3)
+library(ggplot2)
+library(tidyr)
 
-mydata <- mydata |>
+datos <- read_excel("/home/lsalvatore/Documents/FACULTAD/ProbabilidadYEstadistica2024/Prob_Datos_LP.xlsx", col_names = FALSE, skip=3)
+
+datos <- datos |>
       select(   # Seleccionar las columnas que quiero conservar
              "...1", "...2", "...3", "...5", "...24", "...25", "...38", "...39", "...40", "...41", "...42", "...43", "...44", "...45", "...46", "...47", "...48", "...50",  "...56", "...57", "...58", "...59", "...60", "...111", "...112", "...113" 
          )
 
-colnames(mydata) <- c("OrdenInicial", # Cuantitativa Discreta
+colnames(datos) <- c("OrdenInicial", # Cuantitativa Discreta
                       "Provincia", # Cualitativa Nominal
                       "Barrio", # Cualitativa Nominal
                       "TiempoDeResidenciaEnAños", # Cuantitativa Continua
@@ -33,8 +36,8 @@ colnames(mydata) <- c("OrdenInicial", # Cuantitativa Discreta
                       "FrecuenciaTransporteColectivo", 
                       "FrecuenciaDisparDiaNoche", 
                       "AccesoBicicleta")
-mydata <- data.frame(mydata)
-mydata_limpia <- mydata |>
+datos <- data.frame(datos)
+datos_base <- datos |>
     mutate(
       PoseeGasNaturalParaCocina = ifelse(PoseeGasNaturalParaCocina == 'Gas natural (red de gas)' & !is.na(PoseeGasNaturalParaCocina), 1, 0),
       PoseeGarrafaParaCocina = ifelse(PoseeGarrafaParaCocina == 'Gas natural (red de gas)'& !is.na(PoseeGarrafaParaCocina), 1, 0),
@@ -78,9 +81,83 @@ mydata_limpia <- mydata |>
 
 #GRAFICOS
 
-tableFormaObtencionAguaConteo <- table(mydata_limpia$FormaObtencionAgua)
-barplot(tableFormaObtencionAguaConteo, cex.names = 0.45)
+#SERVICIO DE AGUA
 
-tableSinMedidorDeAgua <- mydata_limpia %>% 
-  filter(FormaObtencionAgua %in% c('Sin medidor, informalmente'))
-barplot(table(tableSinMedidorDeAgua$Provincia), cex.names=0.45)
+datos_agua_RedONoRed <-  datos_base |>
+         mutate(
+           FormaObtencionAgua = recode(FormaObtencionAgua, "No sabe" = "No sabe", 
+                                       "Con medidor en red" = "En red",
+                                       "Sin medidor, informalmente" = "Fuera de la red",
+                                       "Camión cisterna" = "Fuera de la red",
+                                       "No posee agua, consume agua externa" = "Fuera de la red",
+                                       "Agua de pozo" = "Fuera de la red",
+                                       "Tanque comunitario" = "Fuera de la red"
+                                       )
+         )
+
+#Se grafica primero un panorama de la cantidad de hogares sin medidor en red
+RedONoRed_AguaConteo <- table(datos_agua_RedONoRed$FormaObtencionAgua)
+barplot(RedONoRed_AguaConteo, cex.names = 0.45)
+
+#Se grafica luego específicamentes las formas que tienen de abastecerse de agua
+
+FormaObtencionAguaConteo <- table(datos_base$FormaObtencionAgua)
+barplot(FormaObtencionAguaConteo, cex.names = 0.45)
+
+#Se divide por provincias las que están fuera de la red
+datos_agua_SinMedidorDeAgua <- datos_agua_RedONoRed %>% 
+  filter(FormaObtencionAgua %in% c('Fuera de la red'))
+barplot(table(datos_agua_SinMedidorDeAgua$Provincia), cex.names=0.45)
+
+#Entre las que están fuera de la red, se consume agua embotellada?
+pie(table(datos_agua_SinMedidorDeAgua$SeConsumeAguaEmbotellada))
+
+#Entre las que están fuera de la red, cuantos años hace que viven en estas condiciones?
+tiempoResidenciaAniosIntervalos <- cut(datos_agua_SinMedidorDeAgua$TiempoDeResidenciaEnAños, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120))
+tiempoResidenciaAniosFreq <- table(tiempoResidenciaAniosIntervalos)
+barplot(tiempoResidenciaAniosFreq, main="Tiempo de residencia sin contar con medidores de agua", xlab="Tiempo de residencia en años", ylab="Frecuencia", col="blue", cex.names=0.80)
+
+#SERVICIO DE GAS
+datos_gas <- datos_base
+datos_gas$EnergiaParaCocina = ifelse(datos_gas$PoseeGasNaturalParaCocina, "Gas natural", 
+                                     ifelse(datos_gas$NoTieneParaCocina, "No tiene", "Otro abastecimiento"))
+datos_gas$EnergiaParaCalefaccion = ifelse(datos_gas$PoseeGasNaturalParaCalefaccion, "Gas natural", 
+                                     ifelse(datos_gas$NoTieneParaCalefaccion, "No tiene", "Otro abastecimiento"))
+datos_gas$ServicioDeGas = ifelse(datos_gas$PoseeGasNaturalParaCalefaccion | datos_gas$PoseeGasNaturalParaCocina, "Gas natural", 
+                                 ifelse(datos_gas$NoTieneParaCalefaccion & datos_gas$NoTieneParaCocina, "No tiene", "Otro abastecimiento"))
+
+#Se grafica primero un panorama de la cantidad de hogares sin gas natural para cocina
+RedONoRed_GasConteo <- table(datos_gas$ServicioDeGas)
+barplot(RedONoRed_GasConteo, cex.names = 0.45, main='Hogares con gas natural u otro abastecimiento')
+
+#Se divide por provincias las que están fuera de la red
+datos_gas_SinMedidorDeGas <- datos_gas %>% 
+  filter(ServicioDeGas %in% c('Otro abastecimiento', 'No tiene'))
+barplot(table(datos_gas_SinMedidorDeGas$Provincia), cex.names=0.45, main="Hogares sin gas natural con medidor por Provincia")
+
+#Se grafica luego un contraste de cada tipo de abastecimiento de gas
+tipos_abastecimiento_calor <- c()
+tipos_abastecimiento_calor$gas_natural = datos_gas$PoseeGasNaturalParaCalefaccion | datos_gas$PoseeGasNaturalParaCocina
+tipos_abastecimiento_calor$garrafa = datos_gas$PoseeGarrafaParaCocina | datos_gas$PoseeGarrafaParaCalefaccion
+tipos_abastecimiento_calor$electricidad = datos_gas$ElectricidadParaCocina | datos_gas$ElectricidadParaCalefaccion
+tipos_abastecimiento_calor$leñacarbon = datos_gas$PoseeLeñaCarbonParaCocina | datos_gas$PoseeLeñaCarbonParaCalefaccion
+tipos_abastecimiento_calor$no_tiene = datos_gas$NoTieneParaCalefaccion & datos_gas$NoTieneParaCocina
+
+tipos_abastecimiento_calor_frame <- data.frame(tipos_abastecimiento_calor)
+tipos_abastecimiento_calor_long <- pivot_longer(tipos_abastecimiento_calor_frame, cols = everything(), names_to = "Variable", values_to = "Valor")
+tipos_abastecimiento_calor_long <- tipos_abastecimiento_calor_long %>%
+  mutate(Valor = ifelse(Valor, "Sí", "No"))
+ggplot(tipos_abastecimiento_calor_long, aes(x = Variable, fill = Valor)) +
+  geom_bar(position = "dodge") +
+  scale_fill_manual(values = c("Sí" = "green", "No" = "red")) +
+  geom_text(stat = 'count', aes(label = ..count..), position = position_dodge(width = 0.9), vjust = -0.5) +
+  labs(title = "Distribución de hogares por cada tipo de abastecimiento de gas",
+       x = "Columnas",
+       y = "Frecuencia",
+       fill = "Valor") +
+  theme_minimal()
+
+
+
+variable$Conteo <- table(datos_gas$PoseeGasNaturalParaCocina)
+barplot(FormaObtencionAguaConteo, cex.names = 0.45)
