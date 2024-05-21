@@ -184,3 +184,45 @@ ggplot(tipos_abastecimiento_calor_long, aes(x = Variable, fill = Valor)) +
        y = "Frecuencia",
        fill = "Valor") +
   theme_minimal()
+
+#Entre las que están fuera de la red, cuantos años hace que viven en estas condiciones?
+tiempoResidenciaAniosIntervalos <- cut(datos_gas_SinMedidorDeGas$TiempoDeResidenciaEnAños, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120))
+tiempoResidenciaAniosFreq <- table(tiempoResidenciaAniosIntervalos)
+barplot(tiempoResidenciaAniosFreq, main="Tiempo de residencia sin contar con medidores de gas", xlab="Tiempo de residencia en años", ylab="Frecuencia", col="blue", cex.names=0.80)
+
+##########################################################
+#SERVICIO DE GAS#############################
+##########################################################
+#Dividimos el atributo en 3 tipos de valores:
+# En red particular, en red comunitaria, fuera de la red.
+datos_luz_RedONoRed <-  datos_base |>
+  mutate(
+    TipoConexionElectrica = recode(TipoConexionElectrica, "Con medidor en red" = "En red particular", 
+                                "Sin medidor, informalmente" = "Fuera de la red",
+                                "Con medidor comunitario" = "En red comunitaria",
+                                "No tiene acceso a la red eléctrica" = "Fuera de la red"
+    )
+  )
+
+RedONoRed_LuzConteo <- table(datos_luz_RedONoRed$TipoConexionElectrica)
+barplot(RedONoRed_LuzConteo, cex.names = 0.45)
+
+#Se divide por provincias las que están fuera de la red
+datos_SinMedidorDeLuz <- datos_luz_RedONoRed %>% 
+  filter(TipoConexionElectrica %in% c('Fuera de la red'))
+barplot(table(datos_SinMedidorDeLuz$Provincia), cex.names=0.45, main="Hogares sin luz corriente o de medidor por Provincia")
+
+#Entre las que están fuera de la red, cuantos años hace que viven en estas condiciones?
+tiempoResidenciaAniosIntervalos <- cut(datos_SinMedidorDeLuz$TiempoDeResidenciaEnAños, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120))
+tiempoResidenciaAniosFreq <- table(tiempoResidenciaAniosIntervalos)
+barplot(tiempoResidenciaAniosFreq, main="Tiempo de residencia sin contar con medidores de luz", xlab="Tiempo de residencia en años", ylab="Frecuencia", col="blue", cex.names=0.80)
+
+##########################################################
+#SERVICIO DE INTERNET#############################
+##########################################################
+#Analizamos los diferentes tipos de internet que tiene cada hogar
+barplot(table(datos_base$TipoDeInternetEnElHogar), main="Tipo de internet en el hogar", col="yellow", cex.names=0.80)
+#Se puede observar que muchos hogares en estos barrios populares no tienen internet. En qué provincias se concentra la mayor cantidad sin conectividad?
+datos_SinInternet <- datos_base %>% 
+  filter(TipoDeInternetEnElHogar %in% c('No posee'))
+barplot(table(datos_SinInternet$Provincia), cex.names=0.45, main="Hogares sin internet por Provincia")
