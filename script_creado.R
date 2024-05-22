@@ -191,7 +191,7 @@ tiempoResidenciaAniosFreq <- table(tiempoResidenciaAniosIntervalos)
 barplot(tiempoResidenciaAniosFreq, main="Tiempo de residencia sin contar con medidores de gas", xlab="Tiempo de residencia en años", ylab="Frecuencia", col="blue", cex.names=0.80)
 
 ##########################################################
-#SERVICIO DE GAS#############################
+#SERVICIO DE LUZ#############################
 ##########################################################
 #Dividimos el atributo en 3 tipos de valores:
 # En red particular, en red comunitaria, fuera de la red.
@@ -203,14 +203,14 @@ datos_luz_RedONoRed <-  datos_base |>
                                 "No tiene acceso a la red eléctrica" = "Fuera de la red"
     )
   )
-
-RedONoRed_LuzConteo <- table(datos_luz_RedONoRed$TipoConexionElectrica)
-barplot(RedONoRed_LuzConteo, cex.names = 0.45)
+barplot(table(datos_luz_RedONoRed$TipoConexionElectrica), cex.names = 0.45)
 
 #Se divide por provincias las que están fuera de la red
 datos_SinMedidorDeLuz <- datos_luz_RedONoRed %>% 
   filter(TipoConexionElectrica %in% c('Fuera de la red'))
-barplot(table(datos_SinMedidorDeLuz$Provincia), cex.names=0.45, main="Hogares sin luz corriente o de medidor por Provincia")
+datos_SinMedidorDeLuz_Provincia_Table <- table(datos_SinMedidorDeLuz$Provincia)
+datos_SinMedidorDeLuz_Provincia_Data_Frame <- as.data.frame(datos_SinMedidorDeLuz_Provincia_Table)
+
 
 #Entre las que están fuera de la red, cuantos años hace que viven en estas condiciones?
 #Descripción gráfica de la variable 'Tiempo de residencia en años' (cuantitativa continua) en relación a la variable categórica 'Tipo de conexión eléctrica'
