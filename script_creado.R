@@ -213,6 +213,8 @@ datos_SinMedidorDeLuz <- datos_luz_RedONoRed %>%
 barplot(table(datos_SinMedidorDeLuz$Provincia), cex.names=0.45, main="Hogares sin luz corriente o de medidor por Provincia")
 
 #Entre las que están fuera de la red, cuantos años hace que viven en estas condiciones?
+#Descripción gráfica de la variable 'Tiempo de residencia en años' (cuantitativa continua) en relación a la variable categórica 'Tipo de conexión eléctrica'
+#Relación entre 'Tiempo de residencia en años' y 'Tipo de conexión eléctrica' (dos variables categorícas). Esta segunda variable filtrada
 tiempoResidenciaAniosIntervalos <- cut(datos_SinMedidorDeLuz$TiempoDeResidenciaEnAños, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120))
 tiempoResidenciaAniosFreq <- table(tiempoResidenciaAniosIntervalos)
 barplot(tiempoResidenciaAniosFreq, main="Tiempo de residencia sin contar con medidores de luz", xlab="Tiempo de residencia en años", ylab="Frecuencia", col="blue", cex.names=0.80)
@@ -221,8 +223,16 @@ barplot(tiempoResidenciaAniosFreq, main="Tiempo de residencia sin contar con med
 #SERVICIO DE INTERNET#############################
 ##########################################################
 #Analizamos los diferentes tipos de internet que tiene cada hogar
-barplot(table(datos_base$TipoDeInternetEnElHogar), main="Tipo de internet en el hogar", col="yellow", cex.names=0.80)
+#Descripción gráfica de la variable 'Tipo de Internet' (Cualitativa en escala nominal)
+datos_base_TipoDeInternetEnElHogar_Table <- table(datos_base$TipoDeInternetEnElHogar)
+text(barplot(datos_base_TipoDeInternetEnElHogar_Table, main="Tipo de internet en el hogar", ylab="Cantidad de hogares", col="yellow", cex.names=0.80),
+     datos_base_TipoDeInternetEnElHogar_Table / 2, labels=datos_base_TipoDeInternetEnElHogar_Table, cex=1.2, col="red")
+
 #Se puede observar que muchos hogares en estos barrios populares no tienen internet. En qué provincias se concentra la mayor cantidad sin conectividad?
+#Descripción gráfica de la variable 'Provincia' (categórica en escala nominal) en relación a la variable categórica 'Tipo de internet'
+#Relación entre 'Provincia' y 'Tipo de internet' (dos variables categorícas). Esta segunda variable filtrada
 datos_SinInternet <- datos_base %>% 
   filter(TipoDeInternetEnElHogar %in% c('No posee'))
-barplot(table(datos_SinInternet$Provincia), cex.names=0.45, main="Hogares sin internet por Provincia")
+datos_SinInternet_Provincia_Table <- table(datos_SinInternet$Provincia)
+text(barplot(datos_SinInternet_Provincia_Table, cex.names=0.45, main="Cantidad de hogares sin internet por Provincia"),
+     datos_SinInternet_Provincia_Table / 2, labels=datos_SinInternet_Provincia_Table, cex=1.2, col="red")
