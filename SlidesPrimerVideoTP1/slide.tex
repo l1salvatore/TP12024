@@ -1,0 +1,247 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% A Beamer template for Shanghai University          %
+% Author: Sheng Li                                   %
+% Date:   February 2024.                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[UTF8]{beamer}
+\usepackage{hyperref}
+\usepackage[T1]{fontenc}
+
+% other packages
+\usepackage{latexsym,amsmath,xcolor,multicol,booktabs,calligra}
+\usepackage{graphicx,pstricks,listings,stackengine}
+\usepackage{xcolor}
+% dummy text; remove it when working on this template
+\usepackage{lipsum}
+
+\author{Lucas Salvatore}
+\title{Análisis técnico de los datos recabados de Barrios Populares}
+\subtitle{}
+\institute{
+    Facultad de Ciencias Exactas, Ingeniería y Agrimensura \\
+    Universidad Nacional de Rosario
+}
+\date{Mayo, 2024}
+\usepackage{SHU}
+
+% defs
+\def\cmd#1{\texttt{\color{red}\footnotesize $\backslash$#1}}
+\def\env#1{\texttt{\color{blue}\footnotesize #1}}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{halfgray}{gray}{0.55}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\bfseries\color{deepblue},
+    emphstyle=\ttfamily\color{deepred},    % Custom highlighting style
+    stringstyle=\color{deepgreen},
+    numbers=left,
+    numberstyle=\small\color{halfgray},
+    rulesepcolor=\color{red!20!green!20!blue!20},
+    frame=shadowbox,
+}
+
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+    \begin{figure}[htpb]
+        \begin{center}
+            \includegraphics[keepaspectratio, scale=0.18]{pic/UNRLogo.png}
+        \end{center}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \tableofcontents[sectionstyle=show,subsectionstyle=show/shaded/hide,subsubsectionstyle=show/shaded/hide]
+\end{frame}
+
+%----------------------------------------正文开始----------------------------------------%
+\section{Introducción}
+
+\begin{frame}
+
+El objetivo de este trabajo es tener una visión exacta de la situación de los barrios populares de Argentina, con el fin de poder realizar las obras públicas correspondientes para mejorarle la calidad de vida a cada habitante de esos barrios.
+
+Se analizarán diferentes variables en relación a los servicios básicos como luz, agua, gas, transporte y conectividad. También se tendrá en cuenta las familias que mayor tiempo están en esas situaciones para darles prioridad.
+
+\vspace{\baselineskip}
+
+\end{frame}
+
+
+\section{Principales variables a analizar}
+\begin{frame}{Principales variables a analizar}
+ Nuestra población consiste de los hogares o famlias consultadas en diferentes barrios populares de Argentina. Se recogieron los distintos barrios y las provincias en las que se encuentran.
+
+ Tales variables de las cuales nos vamos a basar las diferentes en cuestión son: \linebreak
+\begin{table}[]
+\begin{tabular}{lllll}
+\cline{1-3}
+\multicolumn{1}{|l|}{\textbf{Variable}} & \multicolumn{1}{l|}{\textbf{Tipo Variable}}                                                       & \multicolumn{1}{l|}{\textbf{Motivo}}                                                                               &  &  \\ \cline{1-3}
+\multicolumn{1}{|l|}{Barrio}            & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Cualitativa \\ Politómica \\ Nominal\end{tabular}} & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Nombre del barrio\\ en el que se encuentra\\ el hogar\end{tabular}} &  &  \\ \cline{1-3}
+\multicolumn{1}{|l|}{Provincia}         & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Cualitativa \\ Politómica\\ Nominal\end{tabular}}  & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Distrito o región en la que\\ se encuentra\end{tabular}}            &  &  \\ \cline{1-3}
+\end{tabular}
+\end{table}
+\vspace{\baselineskip}
+
+\end{frame}
+\begin{frame}{Principales variables a analizar: Servicio de agua}
+ Queremos estudiar el abastecimiento de agua que tienen esos barrios y determinar cuales son los que no están en red: \linebreak
+\begin{table}[]
+\begin{tabular}{|l|l|l|ll}
+\cline{1-3}
+\textbf{Variable}                                                       & \textbf{Tipo Variable}                                                       & \textbf{Motivo}                                                                                   &  &  \\ \cline{1-3}
+\begin{tabular}[c]{@{}l@{}}Forma \\ Obtención \\ Agua\end{tabular}      & \begin{tabular}[c]{@{}l@{}}Cualitativa \\ Politómica \\ Nominal\end{tabular} & \begin{tabular}[c]{@{}l@{}}Si el agua \\ es de red o no\end{tabular}                              &  &  \\ \cline{1-3}
+\begin{tabular}[c]{@{}l@{}}Se consume \\ agua embotellada?\end{tabular} & \begin{tabular}[c]{@{}l@{}}Cualitativa \\ Dicotómica \\ Nominal\end{tabular} & \begin{tabular}[c]{@{}l@{}}Si el agua que le llega\\ al domicilio \\ es potable o no\end{tabular} &  &  \\ \cline{1-3}
+\end{tabular}
+\end{table}
+\vspace{\baselineskip}
+
+\end{frame}
+\begin{frame}{Principales variables a analizar: Servicio de gas}
+ Queremos estudiar el abastecimiento de gas que tienen esos barrios y determinar cuales son los que no están en red. Dichas variables son de dos tipos, para cocina o para calefacción.: \linebreak
+\begin{table}[]
+\begin{tabular}{lllll}
+\cline{1-3}
+\multicolumn{1}{|l|}{\textbf{Variable}}                                                                     & \multicolumn{1}{l|}{\textbf{Tipo Variable}}                                                      & \multicolumn{1}{l|}{\textbf{Motivo}}    &  &  \\ \cline{1-3}
+\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}Posee\\ Gas\\ Natural\end{tabular}}                         & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Cualitativa \\ Dicotómica\\ Nominal\end{tabular}} & \multicolumn{1}{l|}{Posee gas en red}   &  &  \\ \cline{1-3}
+\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}Posee\\ Garrafa\end{tabular}}                               & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Cualitativa \\ Dicotómica\\ Nominal\end{tabular}} & \multicolumn{1}{l|}{Posee gas envasado} &  &  \\ \cline{1-3}
+\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}Por\\ Electricidad\end{tabular}} & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Cualitativa \\ Dicotómica\\ Nominal\end{tabular}} & \multicolumn{1}{l|}{No posee gas}       &  &  \\ \cline{1-3}
+\end{tabular}
+\end{table}
+\vspace{\baselineskip}
+
+\end{frame}
+\begin{frame}{Principales variables a analizar: Servicio de gas}
+\begin{table}[]
+\begin{tabular}{lllll}
+\cline{1-3}
+\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}Posee\\ Leña o\\ Carbon\end{tabular}} & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Cualitativa \\ Dicotómica\\ Nominal\end{tabular}} & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Si cocina o se calefacciona\\ el hogar\\ por leña y/o carbón\end{tabular}} &  &  \\ \cline{1-3}
+\multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}No\\ Posee\\ Gas\end{tabular}}        & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Cualitativa \\ Dicotómica\\ Nominal\end{tabular}} & \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Si el hogar directamente\\ no posee gas\end{tabular}}                      &  &  \\ \cline{1-3} 
+\end{tabular}
+\end{table}
+\vspace{\baselineskip}
+
+\end{frame}
+
+\begin{frame}{Principales variables a analizar: Servicio de electricidad}
+Queremos estudiar el abastecimiento de electricidad que tienen esos barrios y determinar a quienes priorizar un buen servicio de electricidad: \linebreak
+\begin{table}[]
+\begin{tabular}{|l|l|l|ll}
+\cline{1-3}
+\textbf{Variable}                                                               & \textbf{Tipo Variable}                                                      & \textbf{Motivo}                                                                     &  &  \\ \cline{1-3}
+\begin{tabular}[c]{@{}l@{}}Tipo\\ Conexion\\ Electrica\end{tabular}             & \begin{tabular}[c]{@{}l@{}}Cualitativa \\ Politómica\\ Nominal\end{tabular} & \begin{tabular}[c]{@{}l@{}}Si la electricidad es\\ de red de proveedor\end{tabular} &  &  \\ \cline{1-3}
+\end{tabular}
+\end{table}
+\vspace{\baselineskip}
+
+\end{frame}
+
+\begin{frame}{Principales variables a analizar: Servicio de internet}
+Queremos estudiar el estado de conectividad, acceso a internet y comunicación de cada hogar: \linebreak
+\begin{table}[]
+\begin{tabular}{|l|l|l|ll}
+\cline{1-3}
+\textbf{Variable}                                                        & \textbf{Tipo Variable}                                                     & \textbf{Motivo}                                                                       &  &  \\ \cline{1-3}
+\begin{tabular}[c]{@{}l@{}}Tipo de\\ Internet\end{tabular}               & \begin{tabular}[c]{@{}l@{}}Cualitativa\\ Politómica\\ Nominal\end{tabular} & \begin{tabular}[c]{@{}l@{}}Qué tipo de \\ internet posee\end{tabular}                 &  &  \\ \cline{1-3}
+\begin{tabular}[c]{@{}l@{}}Hay celular con \\ internet?\end{tabular}     & \begin{tabular}[c]{@{}l@{}}Cualitativa\\ Dicotómica\\ Nominal\end{tabular} & \begin{tabular}[c]{@{}l@{}}Si hay algún \\ teléfono movil\\ con internet\end{tabular} &  &  \\ \cline{1-3}
+\begin{tabular}[c]{@{}l@{}}Num de Abonos de\\ datos móviles\end{tabular} & \begin{tabular}[c]{@{}l@{}}Cuantitativa\\ Discreta\end{tabular}            & \begin{tabular}[c]{@{}l@{}}Cuantos servicios de \\ internet hay\end{tabular}          &  &  \\ \cline{1-3}
+\end{tabular}
+\end{table}
+\vspace{\baselineskip}
+
+\end{frame}
+
+\begin{frame}{Principales variables a analizar: Servicio de internet}
+\begin{table}[]
+\begin{tabular}{|l|l|l|ll}
+\cline{1-3}
+\begin{tabular}[c]{@{}l@{}}Cantidad de \\ computadoras\end{tabular} & \begin{tabular}[c]{@{}l@{}}Cuantitativa \\ Discreta\end{tabular} & \begin{tabular}[c]{@{}l@{}}Cuantas computadoras \\ hay en el hogar, ya sea\\ para trabajo o comunicación\end{tabular} &  &  \\ \cline{1-3}
+Cantidad de celulares                                               & \begin{tabular}[c]{@{}l@{}}Cuantitativa \\ Discreta\end{tabular} & \begin{tabular}[c]{@{}l@{}}Cuantos celulares \\ hay en el hogar, ya sea\\ para trabajo o comunicación\end{tabular}    &  &  \\ \cline{1-3}
+\end{tabular}
+\end{table}
+\vspace{\baselineskip}
+
+\end{frame}
+\begin{frame}{Principales variables a analizar: Servicio de transporte}
+Queremos estudiar el acceso al transporte que tiene cada familia que viven en estos barrios populares, la frecuencia, si de noche funciona el transporte y si hay acceso a bicicleta pública cerca: \linebreak
+\begin{table}[]
+\begin{tabular}{|l|l|l|ll}
+\cline{1-3}
+\textbf{Variable}                                                                   & \textbf{Tipo Variable}                                                     & \textbf{Motivo}                                                                                              &  &  \\ \cline{1-3}
+\begin{tabular}[c]{@{}l@{}}Frecuencia de \\ Colectivo\end{tabular}                  & \begin{tabular}[c]{@{}l@{}}Cualitativa\\ Politómica\\ Ordinal\end{tabular} & \begin{tabular}[c]{@{}l@{}}Cada cuanto pasa \\ el colectivo en caso \\ de haber cerca del hogar\end{tabular} &  &  \\ \cline{1-3}
+\begin{tabular}[c]{@{}l@{}}Frecuencia dispar\\ entre el dia y la noche\end{tabular} & \begin{tabular}[c]{@{}l@{}}Cualitativa\\ Dicotómica\\ Nominal\end{tabular} & \begin{tabular}[c]{@{}l@{}}El colectivo funciona \\ de noche?\end{tabular}                                   &  &  \\ \cline{1-3}
+Acceso Bicicleta                                                                    & \begin{tabular}[c]{@{}l@{}}Cualitativa\\ Politómica\\ Ordinal\end{tabular} & \begin{tabular}[c]{@{}l@{}}Saber si hay acceso \\ a bicicletas públicas cerca\end{tabular}                   &  &  \\ \cline{1-3}
+\end{tabular}
+\end{table}
+
+\vspace{\baselineskip}
+
+\end{frame}
+\begin{frame}{Principales variables a analizar: Tiempo de residencia en el hogar}
+Se recolectó el tiempo transcurrido de residencia en el hogar, para establecer la cantidad de personas que mayor tiempo viven en las condiciones estudiadas \linebreak
+\begin{table}[]
+\begin{tabular}{|l|l|l|ll}
+\cline{1-3}
+\textbf{Variable}                                                      & \textbf{Tipo Variable}                                          & \textbf{Motivo}                                                                                                                      &  &  \\ \cline{1-3}
+\begin{tabular}[c]{@{}l@{}}Tiempo de residencia\\ en años\end{tabular} & \begin{tabular}[c]{@{}l@{}}Cuantitativa\\ Continua\end{tabular} & \begin{tabular}[c]{@{}l@{}}Establecer la cantidad\\ de personas que mayor\\ tiempo viven en las\\ condiciones  Tiemestudiadas\end{tabular} &  &  \\ \cline{1-3}
+\end{tabular}
+\end{table}
+\end{frame}
+
+\section{Descripciones gráficas}
+
+\begin{frame}{Descripciones gráficas: Servicio de Internet}
+\begin{itemize}
+    \item \textbf{Gráfico de barras} de la variable \textit{Tipo de Internet}. Necesitamos ver de forma clara cuantos hogares tienen o no tienen algún tipo de comunicación.
+    \item \textbf{Tabla de distribución de frecuencias} de la variable \textit{Provincia} bajo la restricción de la variable \textit{Tipo de Internet}. En este caso, necesitamos ver las provincias las cuales tienen mayor número de hogares sin internet.
+    \underline{Relación entre dos categóricas.}
+\end{itemize}
+
+\end{frame}
+\begin{frame}{Descripciones gráficas: Servicio de Electricidad}
+\begin{itemize}
+    \item \textbf{Gráfico de barras} de la variable \textit{Tipo Conexión Eléctrica}. Necesitamos ver de forma clara cuantos hogares tienen o no servicio corriente de luz, es decir si tienen o no medidor de luz particular.
+    \item \textbf{Tabla de distribución de frecuencias} de la variable \textit{Provincia} bajo la restricción de la variable \textit{Tipo Conexión Eléctrica}. En este caso, necesitamos ver las provincias las cuales tienen mayor número de hogares con servicio irregular de electricidad.
+   \underline{Relación entre dos categóricas.}
+   \item \textbf{Gráfico de barras} de la variable \textit{Tiempo de Residencia} bajo la restricción de la variable \textit{Tipo Conexión Eléctrica}. En este caso, queremos mostrar el tiempo en el cual están sin contar con un servicio regular de electricidad.
+   \underline{Relación entre una cuantitativa y una categórica.}
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Descripciones gráficas: Servicio de Gas}
+\begin{itemize}
+   \item \textbf{Gráfico de barras} de las variables \textit{Tiene gas natural}, \textit{Cocina o Calefacción por electricidad},\textit{Tiene garrafa}, \textit{Leña o Carbón} y \textit{No tiene gas}. En este caso, queremos mostrar si cada hogar tiene gas natural o caso contrario qué formas tienen de calefaccionar y cocinar.
+    \item \textbf{Tabla de distribución de frecuencias} de la variable \textit{Provincia} bajo la restricción de la variable calculada \textit{Servicio De Gas}. En este caso, necesitamos ver las provincias las cuales tienen mayor número de hogares con servicio irregular de gas, las que no tienen gas natural
+   \underline{Relación entre dos categóricas.}
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Descripciones gráficas: Servicio de Gas}
+\begin{itemize}
+
+   \item \textbf{Gráfico de barras} de la variable \textit{Tiempo de Residencia} bajo la restricción de la variable valculada \textit{Servicio de gas}. En este caso, queremos mostrar el tiempo en el cual están sin contar con un servicio regular de gas.
+   \underline{Relación entre una cuantitativa y una categórica.}
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Descripciones gráficas: Servicio de Agua}
+\begin{itemize}
+   \item \textbf{Gráfico de barras} de la variable \textit{Tiempo de Residencia} bajo la restricción de la variable valculada \textit{Servicio de gas}. En este caso, queremos mostrar el tiempo en el cual están sin contar con un servicio regular de gas.
+   \underline{Relación entre una cuantitativa y una categórica.}
+
+\end{itemize}
+
+\end{frame}
+\end{document}

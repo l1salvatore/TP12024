@@ -152,14 +152,14 @@ barplot(tiempoResidenciaAniosFreq, main="Tiempo de residencia sin contar con med
 #SERVICIO DE GAS#############################
 ##########################################################
 datos_gas <- datos_base
-datos_gas$EnergiaParaCocina = ifelse(datos_gas$PoseeGasNaturalParaCocina, "Gas natural", 
-                                     ifelse(datos_gas$NoTieneParaCocina, "No tiene", "Otro abastecimiento"))
-datos_gas$EnergiaParaCalefaccion = ifelse(datos_gas$PoseeGasNaturalParaCalefaccion, "Gas natural", 
-                                     ifelse(datos_gas$NoTieneParaCalefaccion, "No tiene", "Otro abastecimiento"))
 datos_gas$ServicioDeGas = ifelse(datos_gas$PoseeGasNaturalParaCalefaccion | datos_gas$PoseeGasNaturalParaCocina, "Gas natural", 
                                  ifelse(datos_gas$NoTieneParaCalefaccion & datos_gas$NoTieneParaCocina, "No tiene", "Otro abastecimiento"))
 
-#Se grafica un contraste de cada tipo de abastecimiento de gas 
+# Gráfico de barras de las variables Tiene gas natural, Cocina
+# o Calefacción por electricidad,Tiene garrafa, Leña o Carbón y
+# No tiene gas. En este caso, queremos mostrar si cada hogar
+# tiene gas natural o caso contrario qué formas tienen de
+# calefaccionar y cocinar.
 tipos_abastecimiento_calor <- c()
 tipos_abastecimiento_calor$gas_natural = datos_gas$PoseeGasNaturalParaCocina | datos_gas$PoseeGasNaturalParaCalefaccion
 tipos_abastecimiento_calor$garrafa = datos_gas$PoseeGarrafaParaCocina | datos_gas$PoseeGarrafaParaCalefaccion
@@ -182,7 +182,12 @@ ggplot(tipos_abastecimiento_calor_long, aes(x = Variable, fill = Valor)) +
   theme_minimal()
 
 
-#Se divide por provincias las que están fuera de la red
+#Tabla de distribución de frecuencias de la variable
+#Provincia bajo la restricción de la variable calculada Servicio
+#De Gas. En este caso, necesitamos ver las provincias las cuales
+#tienen mayor número de hogares con servicio irregular de gas,
+#las que no tienen gas natural Relación entre dos categóricas
+
 datos_gas_SinMedidorDeGas <- datos_gas %>% 
   filter(ServicioDeGas %in% c('Otro abastecimiento', 'No tiene'))
 datos_gas_SinMedidorDeGas_Provincia_Table <- table(datos_gas_SinMedidorDeGas$Provincia)
@@ -193,7 +198,11 @@ datos_gas_SinMedidorDeGas_Provincia_Data_Frame
 
 
 
-#Entre las que están fuera de la red, cuantos años hace que viven en estas condiciones?
+#Gráfico de barras de la variable Tiempo de Residencia bajo
+#la restricción de la variable valculada Servicio de gas. En este
+#caso, queremos mostrar el tiempo en el cual están sin contar
+#con un servicio regular de gas.
+#Relación entre una cuantitativa y una categórica
 tiempoResidenciaAniosIntervalos <- cut(datos_gas_SinMedidorDeGas$TiempoDeResidenciaEnAños, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120))
 tiempoResidenciaAniosFreq <- table(tiempoResidenciaAniosIntervalos)
 barplot(tiempoResidenciaAniosFreq, main="Tiempo de residencia sin contar con medidores de gas", xlab="Tiempo de residencia en años", ylab="Frecuencia", col="blue", cex.names=0.80)
@@ -203,6 +212,11 @@ barplot(tiempoResidenciaAniosFreq, main="Tiempo de residencia sin contar con med
 ##########################################################
 #Dividimos el atributo en 3 tipos de valores:
 # En red particular, en red comunitaria, fuera de la red.
+
+#Gráfico de barras de la variable Tipo Conexión Eléctrica.
+#Necesitamos ver de forma clara cuantos hogares tienen o no
+#servicio corriente de luz, es decir si tienen o no medidor de luz
+#particular
 datos_luz_RedONoRed <-  datos_base |>
   mutate(
     TipoConexionElectrica = recode(TipoConexionElectrica, "Con medidor en red" = "En red particular", 
@@ -213,7 +227,12 @@ datos_luz_RedONoRed <-  datos_base |>
   )
 barplot(table(datos_luz_RedONoRed$TipoConexionElectrica), cex.names = 0.45)
 
-#Se divide por provincias las que están fuera de la red
+#Tabla de distribución de frecuencias de la variable
+#Provincia bajo la restricción de la variable Tipo Conexión
+#Eléctrica. En este caso, necesitamos ver las provincias las
+#cuales tienen mayor número de hogares con servicio irregular
+#de electricidad. Relación entre dos categóricas
+
 datos_SinMedidorDeLuz <- datos_luz_RedONoRed %>% 
   filter(TipoConexionElectrica %in% c('Fuera de la red'))
 datos_SinMedidorDeLuz_Provincia_Table <- table(datos_SinMedidorDeLuz$Provincia)
@@ -222,9 +241,11 @@ datos_SinMedidorDeLuz_Provincia_Data_Frame <- datos_SinMedidorDeLuz_Provincia_Da
 names(datos_SinMedidorDeLuz_Provincia_Data_Frame) = c('Provincia', 'Frecuencia')
 datos_SinMedidorDeLuz_Provincia_Data_Frame
 
-#Entre las que están fuera de la red, cuantos años hace que viven en estas condiciones?
-#Descripción gráfica de la variable 'Tiempo de residencia en años' (cuantitativa continua) en relación a la variable categórica 'Tipo de conexión eléctrica'
-#Relación entre 'Tiempo de residencia en años' y 'Tipo de conexión eléctrica' (dos variables categorícas). Esta segunda variable filtrada
+#Gráfico de barras de la variable Tiempo de Residencia bajo
+#la restricción de la variable Tipo Conexión Eléctrica. En este
+#caso, queremos mostrar el tiempo en el cual están sin contar
+#con un servicio regular de electricidad.
+#Relación entre una cuantitativa y una categórica.
 tiempoResidenciaAniosIntervalos <- cut(datos_SinMedidorDeLuz$TiempoDeResidenciaEnAños, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120))
 tiempoResidenciaAniosFreq <- table(tiempoResidenciaAniosIntervalos)
 barplot(tiempoResidenciaAniosFreq, main="Tiempo de residencia sin contar con medidores de luz", xlab="Tiempo de residencia en años", ylab="Frecuencia", col="blue", cex.names=0.80)
@@ -232,15 +253,20 @@ barplot(tiempoResidenciaAniosFreq, main="Tiempo de residencia sin contar con med
 ##########################################################
 #SERVICIO DE INTERNET#############################
 ##########################################################
-#Analizamos los diferentes tipos de internet que tiene cada hogar
-#Descripción gráfica de la variable 'Tipo de Internet' (Cualitativa en escala nominal)
+#Gráfico de barras de la variable Tipo de Internet.
+#Necesitamos ver de forma clara cuantos hogares tienen o no
+#tienen algún tipo de comunicación.
+
 datos_base_TipoDeInternetEnElHogar_Table <- table(datos_base$TipoDeInternetEnElHogar)
 text(barplot(datos_base_TipoDeInternetEnElHogar_Table, main="Tipo de internet en el hogar", ylab="Cantidad de hogares", col="yellow", cex.names=0.80),
      datos_base_TipoDeInternetEnElHogar_Table / 2, labels=datos_base_TipoDeInternetEnElHogar_Table, cex=1.2, col="red")
 
-#Se puede observar que muchos hogares en estos barrios populares no tienen internet. En qué provincias se concentra la mayor cantidad sin conectividad?
-#Descripción gráfica de la variable 'Provincia' (categórica en escala nominal) en relación a la variable categórica 'Tipo de internet'
-#Relación entre 'Provincia' y 'Tipo de internet' (dos variables categorícas). Esta segunda variable filtrada
+#Tabla de distribución de frecuencias de la variable
+#Provincia bajo la restricción de la variable Tipo de Internet.
+#En este caso, necesitamos ver las provincias las cuales tienen
+#mayor número de hogares sin internet.
+#Relación entre dos categóricas.
+
 datos_SinInternet <- datos_base %>% 
   filter(TipoDeInternetEnElHogar %in% c('No posee'))
 datos_SinInternet_Provincia_Table <- table(datos_SinInternet$Provincia)
