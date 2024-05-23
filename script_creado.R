@@ -108,41 +108,54 @@ datos_base <- filtered
 #SERVICIO DE AGUA#############################
 ##########################################################
 
+#Gráfico de barras de la variable Forma Obtención Agua.
+#Necesitamos observar cuantos hogares tienen o no
+#servicio de agua corriente, o en caso de que no, de qué forma obtienen el agua
+#particular.
 
-datos_agua_RedONoRed <-  datos_base |>
+datos_agua <-  datos_base |>
          mutate(
            FormaObtencionAgua = recode(FormaObtencionAgua, "No sabe" = "No sabe", 
                                        "Con medidor en red" = "En red",
-                                       "Sin medidor, informalmente" = "Fuera de la red",
-                                       "Camión cisterna" = "Fuera de la red",
-                                       "No posee agua, consume agua externa" = "Fuera de la red",
-                                       "Agua de pozo" = "Fuera de la red",
-                                       "Tanque comunitario" = "Fuera de la red"
+                                       "Sin medidor, informalmente" = "Informalmente",
+                                       "Camión cisterna" = "Camión cisterna",
+                                       "No posee agua, consume agua externa" = "No posee agua",
+                                       "Agua de pozo" = "Agua de pozo",
+                                       "Tanque comunitario" = "Tanque comunitario"
                                        )
          )
-
-#Se grafica primero un panorama de la cantidad de hogares sin medidor en red
-RedONoRed_AguaConteo <- table(datos_agua_RedONoRed$FormaObtencionAgua)
-barplot(RedONoRed_AguaConteo, cex.names = 0.45)
-
-#Se grafica luego específicamentes las formas que tienen de abastecerse de agua
-datos_agua_SinMedidorDeAgua <- datos_base %>% 
-  filter(!(FormaObtencionAgua %in% c('Con medidor en red', 'No sabe')))
-FormaObtencionAguaConteo <- table(datos_agua_SinMedidorDeAgua$FormaObtencionAgua)
-barplot(FormaObtencionAguaConteo, cex.names = 0.45)
+text(barplot(table(datos_agua$FormaObtencionAgua), main="Cantidad de hogares por forma de obtener el agua", ylab="Cantidad de hogares", col="yellow", cex.names=0.80),
+     table(datos_agua$FormaObtencionAgua) / 2, labels=table(datos_agua$FormaObtencionAgua), cex=1.2, col="red")
 
 
-#Se divide por provincias las que están fuera de la red
+
+#Tabla de distribución de frecuencias de la variable
+#Provincia bajo la restricción de la variable Forma Obtención
+#Agua. En este caso, necesitamos ver las provincias las
+#cuales tienen mayor número de hogares con servicio irregular
+#de agua. Relación entre dos categóricas.
+
+datos_agua_SinMedidorDeAgua <- datos_agua %>% 
+  filter(!(FormaObtencionAgua %in% c('En red')))
 datos_agua_SinMedidorDeAgua_Provincia_Table <- table(datos_agua_SinMedidorDeAgua$Provincia)
 datos_agua_SinMedidorDeAgua_Provincia_Data_Frame <- as.data.frame(datos_agua_SinMedidorDeAgua_Provincia_Table)
 datos_agua_SinMedidorDeAgua_Provincia_Data_Frame <- datos_agua_SinMedidorDeAgua_Provincia_Data_Frame[order(datos_agua_SinMedidorDeAgua_Provincia_Data_Frame$Freq,decreasing = TRUE),]
 names(datos_agua_SinMedidorDeAgua_Provincia_Data_Frame) = c('Provincia', 'Frecuencia')
 datos_agua_SinMedidorDeAgua_Provincia_Data_Frame
 
-#Entre las que están fuera de la red, se consume agua embotellada?
+# Gráfico de torta de la variable Se consume agua
+# embotellada? bajo la restricción de la variable Forma de
+# Obtención Agua. Se necesita ver si de los que consumen agua
+# irregular, cuantos de estos hogares consumen agua
+# embotellada aparte. Relación entre dos categóricas.
 pie(table(datos_agua_SinMedidorDeAgua$SeConsumeAguaEmbotellada))
 
-#Entre las que están fuera de la red, cuantos años hace que viven en estas condiciones?
+#Gráfico de barras de la variable Tiempo de Residencia bajo
+#la restricción de la variable Forma de Obtención Agua. En
+#este caso, queremos mostrar el tiempo en el cual están sin
+#contar con un servicio regular de gas.
+#Relación entre una cuantitativa y una categórica.
+
 tiempoResidenciaAniosIntervalos <- cut(datos_agua_SinMedidorDeAgua$TiempoDeResidenciaEnAños, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120))
 tiempoResidenciaAniosFreq <- table(tiempoResidenciaAniosIntervalos)
 barplot(tiempoResidenciaAniosFreq, main="Tiempo de residencia sin contar con medidores de agua", xlab="Tiempo de residencia en años", ylab="Frecuencia", col="blue", cex.names=0.80)
@@ -274,3 +287,9 @@ datos_SinInternet_Provincia_Data_Frame <- as.data.frame(datos_SinInternet_Provin
 datos_SinInternet_Provincia_Data_Frame <- datos_SinInternet_Provincia_Data_Frame[order(datos_SinInternet_Provincia_Data_Frame$Freq,decreasing = TRUE),]
 names(datos_SinInternet_Provincia_Data_Frame) = c('Provincia', 'Frecuencia')
 datos_SinInternet_Provincia_Data_Frame
+
+##########################################################
+#SERVICIO DE TRANSPORTE#############################
+datos_transporte_table <- sort(table(datos_base$FrecuenciaTransporteColectivo), decreasing = TRUE)
+text(barplot(datos_transporte_table, main="Cantidad de hogares por frecuencia de transporte", xlab="Frecuencia", col="green", cex.names=0.60),
+     datos_transporte_table / 2, labels=datos_transporte_table, cex=1.2, col="red")
