@@ -128,12 +128,16 @@ barplot(RedONoRed_AguaConteo, cex.names = 0.45)
 #Se grafica luego específicamentes las formas que tienen de abastecerse de agua
 datos_agua_SinMedidorDeAgua <- datos_base %>% 
   filter(!(FormaObtencionAgua %in% c('Con medidor en red', 'No sabe')))
-
 FormaObtencionAguaConteo <- table(datos_agua_SinMedidorDeAgua$FormaObtencionAgua)
 barplot(FormaObtencionAguaConteo, cex.names = 0.45)
 
+
 #Se divide por provincias las que están fuera de la red
-barplot(table(datos_agua_SinMedidorDeAgua$Provincia), cex.names=0.45, main="Hogares sin medidor de agua por provincia")
+datos_agua_SinMedidorDeAgua_Provincia_Table <- table(datos_agua_SinMedidorDeAgua$Provincia)
+datos_agua_SinMedidorDeAgua_Provincia_Data_Frame <- as.data.frame(datos_agua_SinMedidorDeAgua_Provincia_Table)
+datos_agua_SinMedidorDeAgua_Provincia_Data_Frame <- datos_agua_SinMedidorDeAgua_Provincia_Data_Frame[order(datos_agua_SinMedidorDeAgua_Provincia_Data_Frame$Freq,decreasing = TRUE),]
+names(datos_agua_SinMedidorDeAgua_Provincia_Data_Frame) = c('Provincia', 'Frecuencia')
+datos_agua_SinMedidorDeAgua_Provincia_Data_Frame
 
 #Entre las que están fuera de la red, se consume agua embotellada?
 pie(table(datos_agua_SinMedidorDeAgua$SeConsumeAguaEmbotellada))
@@ -155,17 +159,9 @@ datos_gas$EnergiaParaCalefaccion = ifelse(datos_gas$PoseeGasNaturalParaCalefacci
 datos_gas$ServicioDeGas = ifelse(datos_gas$PoseeGasNaturalParaCalefaccion | datos_gas$PoseeGasNaturalParaCocina, "Gas natural", 
                                  ifelse(datos_gas$NoTieneParaCalefaccion & datos_gas$NoTieneParaCocina, "No tiene", "Otro abastecimiento"))
 
-#Se grafica primero un panorama de la cantidad de hogares sin gas natural para cocina
-RedONoRed_GasConteo <- table(datos_gas$ServicioDeGas)
-barplot(RedONoRed_GasConteo, cex.names = 0.45, main='Hogares con gas natural u otro abastecimiento')
-
-#Se divide por provincias las que están fuera de la red
-datos_gas_SinMedidorDeGas <- datos_gas %>% 
-  filter(ServicioDeGas %in% c('Otro abastecimiento', 'No tiene'))
-barplot(table(datos_gas_SinMedidorDeGas$Provincia), cex.names=0.45, main="Hogares sin gas natural con medidor por Provincia")
-
-#Se grafica luego un contraste de cada tipo de abastecimiento de gas por fuera de los que tienen gas natural
+#Se grafica un contraste de cada tipo de abastecimiento de gas 
 tipos_abastecimiento_calor <- c()
+tipos_abastecimiento_calor$gas_natural = datos_gas$PoseeGasNaturalParaCocina | datos_gas$PoseeGasNaturalParaCalefaccion
 tipos_abastecimiento_calor$garrafa = datos_gas$PoseeGarrafaParaCocina | datos_gas$PoseeGarrafaParaCalefaccion
 tipos_abastecimiento_calor$electricidad = datos_gas$ElectricidadParaCocina | datos_gas$ElectricidadParaCalefaccion
 tipos_abastecimiento_calor$leñacarbon = datos_gas$PoseeLeñaCarbonParaCocina | datos_gas$PoseeLeñaCarbonParaCalefaccion
@@ -184,6 +180,18 @@ ggplot(tipos_abastecimiento_calor_long, aes(x = Variable, fill = Valor)) +
        y = "Frecuencia",
        fill = "Valor") +
   theme_minimal()
+
+
+#Se divide por provincias las que están fuera de la red
+datos_gas_SinMedidorDeGas <- datos_gas %>% 
+  filter(ServicioDeGas %in% c('Otro abastecimiento', 'No tiene'))
+datos_gas_SinMedidorDeGas_Provincia_Table <- table(datos_gas_SinMedidorDeGas$Provincia)
+datos_gas_SinMedidorDeGas_Provincia_Data_Frame <- as.data.frame(datos_gas_SinMedidorDeGas_Provincia_Table)
+datos_gas_SinMedidorDeGas_Provincia_Data_Frame <- datos_gas_SinMedidorDeGas_Provincia_Data_Frame[order(datos_gas_SinMedidorDeGas_Provincia_Data_Frame$Freq,decreasing = TRUE),]
+names(datos_gas_SinMedidorDeGas_Provincia_Data_Frame) = c('Provincia', 'Frecuencia')
+datos_gas_SinMedidorDeGas_Provincia_Data_Frame
+
+
 
 #Entre las que están fuera de la red, cuantos años hace que viven en estas condiciones?
 tiempoResidenciaAniosIntervalos <- cut(datos_gas_SinMedidorDeGas$TiempoDeResidenciaEnAños, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120))
@@ -210,7 +218,9 @@ datos_SinMedidorDeLuz <- datos_luz_RedONoRed %>%
   filter(TipoConexionElectrica %in% c('Fuera de la red'))
 datos_SinMedidorDeLuz_Provincia_Table <- table(datos_SinMedidorDeLuz$Provincia)
 datos_SinMedidorDeLuz_Provincia_Data_Frame <- as.data.frame(datos_SinMedidorDeLuz_Provincia_Table)
-
+datos_SinMedidorDeLuz_Provincia_Data_Frame <- datos_SinMedidorDeLuz_Provincia_Data_Frame[order(datos_SinMedidorDeLuz_Provincia_Data_Frame$Freq,decreasing = TRUE),]
+names(datos_SinMedidorDeLuz_Provincia_Data_Frame) = c('Provincia', 'Frecuencia')
+datos_SinMedidorDeLuz_Provincia_Data_Frame
 
 #Entre las que están fuera de la red, cuantos años hace que viven en estas condiciones?
 #Descripción gráfica de la variable 'Tiempo de residencia en años' (cuantitativa continua) en relación a la variable categórica 'Tipo de conexión eléctrica'
@@ -234,5 +244,7 @@ text(barplot(datos_base_TipoDeInternetEnElHogar_Table, main="Tipo de internet en
 datos_SinInternet <- datos_base %>% 
   filter(TipoDeInternetEnElHogar %in% c('No posee'))
 datos_SinInternet_Provincia_Table <- table(datos_SinInternet$Provincia)
-text(barplot(datos_SinInternet_Provincia_Table, cex.names=0.45, main="Cantidad de hogares sin internet por Provincia"),
-     datos_SinInternet_Provincia_Table / 2, labels=datos_SinInternet_Provincia_Table, cex=1.2, col="red")
+datos_SinInternet_Provincia_Data_Frame <- as.data.frame(datos_SinInternet_Provincia_Table)
+datos_SinInternet_Provincia_Data_Frame <- datos_SinInternet_Provincia_Data_Frame[order(datos_SinInternet_Provincia_Data_Frame$Freq,decreasing = TRUE),]
+names(datos_SinInternet_Provincia_Data_Frame) = c('Provincia', 'Frecuencia')
+datos_SinInternet_Provincia_Data_Frame
