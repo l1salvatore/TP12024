@@ -130,18 +130,19 @@ text(barplot(table(datos_agua$FormaObtencionAgua), main="Cantidad de hogares por
 
 
 #Tabla de distribución de frecuencias de la variable
-#Provincia bajo la restricción de la variable Forma Obtención
+#Provincia bajo la rla variable Forma Obtención
 #Agua. En este caso, necesitamos ver las provincias las
 #cuales tienen mayor número de hogares con servicio irregular
 #de agua. Relación entre dos categóricas.
 
 datos_agua_SinMedidorDeAgua <- datos_agua %>% 
   filter(!(FormaObtencionAgua %in% c('En red')))
-datos_agua_SinMedidorDeAgua_Provincia_Table <- table(datos_agua_SinMedidorDeAgua$Provincia)
-datos_agua_SinMedidorDeAgua_Provincia_Data_Frame <- as.data.frame(datos_agua_SinMedidorDeAgua_Provincia_Table)
-datos_agua_SinMedidorDeAgua_Provincia_Data_Frame <- datos_agua_SinMedidorDeAgua_Provincia_Data_Frame[order(datos_agua_SinMedidorDeAgua_Provincia_Data_Frame$Freq,decreasing = TRUE),]
-names(datos_agua_SinMedidorDeAgua_Provincia_Data_Frame) = c('Provincia', 'Frecuencia')
-datos_agua_SinMedidorDeAgua_Provincia_Data_Frame
+datos_agua_SinMedidorDeAgua_Provincia_Table <- datos_agua_SinMedidorDeAgua |>
+  select('Provincia', 'FormaObtencionAgua')
+datos_agua_SinMedidorDeAgua_Provincia_Table <- table(datos_agua_SinMedidorDeAgua_Provincia_Table)
+datos_agua_SinMedidorDeAgua_Provincia_Table <- addmargins(datos_agua_SinMedidorDeAgua_Provincia_Table)
+datos_agua_SinMedidorDeAgua_Provincia_Table
+
 
 # Gráfico de torta de la variable Se consume agua
 # embotellada? bajo la restricción de la variable Forma de
@@ -203,11 +204,11 @@ ggplot(tipos_abastecimiento_calor_long, aes(x = Variable, fill = Valor)) +
 
 datos_gas_SinMedidorDeGas <- datos_gas %>% 
   filter(ServicioDeGas %in% c('Otro abastecimiento', 'No tiene'))
-datos_gas_SinMedidorDeGas_Provincia_Table <- table(datos_gas_SinMedidorDeGas$Provincia)
-datos_gas_SinMedidorDeGas_Provincia_Data_Frame <- as.data.frame(datos_gas_SinMedidorDeGas_Provincia_Table)
-datos_gas_SinMedidorDeGas_Provincia_Data_Frame <- datos_gas_SinMedidorDeGas_Provincia_Data_Frame[order(datos_gas_SinMedidorDeGas_Provincia_Data_Frame$Freq,decreasing = TRUE),]
-names(datos_gas_SinMedidorDeGas_Provincia_Data_Frame) = c('Provincia', 'Frecuencia')
-datos_gas_SinMedidorDeGas_Provincia_Data_Frame
+datos_gas_SinMedidorDeGas_Provincia_Table <- datos_gas_SinMedidorDeGas |>
+  select('Provincia', 'ServicioDeGas')
+datos_gas_SinMedidorDeGas_Provincia_Table <- table(datos_gas_SinMedidorDeGas_Provincia_Table)
+datos_gas_SinMedidorDeGas_Provincia_Table <- addmargins(datos_gas_SinMedidorDeGas_Provincia_Table)
+datos_gas_SinMedidorDeGas_Provincia_Table
 
 
 
@@ -246,13 +247,14 @@ barplot(table(datos_luz_RedONoRed$TipoConexionElectrica), cex.names = 0.45)
 #cuales tienen mayor número de hogares con servicio irregular
 #de electricidad. Relación entre dos categóricas
 
-datos_SinMedidorDeLuz <- datos_luz_RedONoRed %>% 
-  filter(TipoConexionElectrica %in% c('Fuera de la red'))
-datos_SinMedidorDeLuz_Provincia_Table <- table(datos_SinMedidorDeLuz$Provincia)
-datos_SinMedidorDeLuz_Provincia_Data_Frame <- as.data.frame(datos_SinMedidorDeLuz_Provincia_Table)
-datos_SinMedidorDeLuz_Provincia_Data_Frame <- datos_SinMedidorDeLuz_Provincia_Data_Frame[order(datos_SinMedidorDeLuz_Provincia_Data_Frame$Freq,decreasing = TRUE),]
-names(datos_SinMedidorDeLuz_Provincia_Data_Frame) = c('Provincia', 'Frecuencia')
-datos_SinMedidorDeLuz_Provincia_Data_Frame
+
+datos_SinMedidorDeLuz <- datos_base %>% 
+  filter(!(TipoConexionElectrica %in% c('Con medidor en red')))
+datos_SinMedidorDeLuz_Provincia_Table <- datos_SinMedidorDeLuz |>
+  select('Provincia', 'TipoConexionElectrica')
+datos_SinMedidorDeLuz_Provincia_Table <- table(datos_SinMedidorDeLuz_Provincia_Table)
+datos_SinMedidorDeLuz_Provincia_Table <- addmargins(datos_SinMedidorDeLuz_Provincia_Table)
+datos_SinMedidorDeLuz_Provincia_Table
 
 #Gráfico de barras de la variable Tiempo de Residencia bajo
 #la restricción de la variable Tipo Conexión Eléctrica. En este
