@@ -296,3 +296,15 @@ datos_Internet_Table
 datos_transporte_table <- sort(table(datos_base$FrecuenciaTransporteColectivo), decreasing = TRUE)
 text(barplot(datos_transporte_table, main="Cantidad de hogares por frecuencia de transporte", xlab="Frecuencia", col="green", cex.names=0.60),
      datos_transporte_table / 2, labels=datos_transporte_table, cex=1.2, col="red")
+
+#Tabla de distribución de frecuencias de la variable
+#Provincia bajo la restricción de la variable Frecuencia Transporte Colectivo.
+#En este caso, necesitamos ver las provincias las cuales tienen
+#mayor número de hogares sin internet.
+#Relación entre dos categóricas.
+
+datos_transporte_table <- datos_base %>% 
+  select('Provincia', 'FrecuenciaTransporteColectivo')
+datos_transporte_table <- table(datos_transporte_table)
+datos_transporte_table <- addmargins(datos_transporte_table)
+datos_transporte_table
