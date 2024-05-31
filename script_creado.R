@@ -108,26 +108,6 @@ datos_base <- filtered
 #SERVICIO DE AGUA#############################
 ##########################################################
 
-#Gráfico de barras de la variable Forma Obtención Agua.
-#Necesitamos observar cuantos hogares tienen o no
-#servicio de agua corriente, o en caso de que no, de qué forma obtienen el agua
-#particular.
-
-datos_agua <-  datos_base |>
-         mutate(
-           FormaObtencionAgua = recode(FormaObtencionAgua, "No sabe" = "No sabe", 
-                                       "Con medidor en red" = "En red",
-                                       "Sin medidor, informalmente" = "Informalmente",
-                                       "Camión cisterna" = "Camión cisterna",
-                                       "No posee agua, consume agua externa" = "No posee agua",
-                                       "Agua de pozo" = "Agua de pozo",
-                                       "Tanque comunitario" = "Tanque comunitario"
-                                       )
-         )
-text(barplot(table(datos_agua$FormaObtencionAgua), main="Cantidad de hogares por forma de obtener el agua", ylab="Cantidad de hogares", col="yellow", cex.names=0.80),
-     table(datos_agua$FormaObtencionAgua) / 2, labels=table(datos_agua$FormaObtencionAgua), cex=1.2, col="red")
-
-
 
 #Tabla de distribución de frecuencias de la variable
 #Provincia bajo la rla variable Forma Obtención
@@ -135,14 +115,21 @@ text(barplot(table(datos_agua$FormaObtencionAgua), main="Cantidad de hogares por
 #cuales tienen mayor número de hogares con servicio irregular
 #de agua. Relación entre dos categóricas.
 
-datos_agua_SinMedidorDeAgua <- datos_agua %>% 
-  filter(!(FormaObtencionAgua %in% c('En red')))
-datos_agua_SinMedidorDeAgua_Provincia_Table <- datos_agua_SinMedidorDeAgua |>
+datos_Provincia_Agua_Table <- datos_base |>
   select('Provincia', 'FormaObtencionAgua')
-datos_agua_SinMedidorDeAgua_Provincia_Table <- table(datos_agua_SinMedidorDeAgua_Provincia_Table)
-datos_agua_SinMedidorDeAgua_Provincia_Table <- addmargins(datos_agua_SinMedidorDeAgua_Provincia_Table)
-datos_agua_SinMedidorDeAgua_Provincia_Table
-
+datos_Provincia_Agua_Table <- table(datos_Provincia_Agua_Table)
+df_tabla <- as.data.frame(datos_Provincia_Agua_Table)
+df_suma <- df_tabla %>%
+  group_by(FormaObtencionAgua) %>%
+  summarise(total = sum(Freq))
+df_ordenado <- df_tabla %>%
+  left_join(df_suma, by = "FormaObtencionAgua") %>%
+  arrange(desc(total), FormaObtencionAgua, Provincia) %>%
+  select(-total)  
+df_ordenado$FormaObtencionAgua <- factor(df_ordenado$FormaObtencionAgua, levels = unique(df_ordenado$FormaObtencionAgua))
+datos_Provincia_Agua_Table <- xtabs(Freq ~ Provincia + FormaObtencionAgua, data = df_ordenado)
+datos_Provincia_Agua_Table <- addmargins(datos_Provincia_Agua_Table)
+datos_Provincia_Agua_Table
 
 # Gráfico de torta de la variable Se consume agua
 # embotellada? bajo la restricción de la variable Forma de
@@ -154,9 +141,11 @@ pie(table(datos_agua_SinMedidorDeAgua$SeConsumeAguaEmbotellada))
 #Gráfico de barras de la variable Tiempo de Residencia bajo
 #la restricción de la variable Forma de Obtención Agua. En
 #este caso, queremos mostrar el tiempo en el cual están sin
-#contar con un servicio regular de gas.
+#contar con un servicio regular de agua.
 #Relación entre una cuantitativa y una categórica.
 
+datos_agua_SinMedidorDeAgua <- datos_base |> 
+  filter(!(FormaObtencionAgua %in% c('Con medidor en red')))
 tiempoResidenciaAniosIntervalos <- cut(datos_agua_SinMedidorDeAgua$TiempoDeResidenciaEnAños, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120))
 tiempoResidenciaAniosFreq <- table(tiempoResidenciaAniosIntervalos)
 barplot(tiempoResidenciaAniosFreq, main="Tiempo de residencia sin contar con medidores de agua", xlab="Tiempo de residencia en años", ylab="Frecuencia", col="blue", cex.names=0.80)
@@ -175,6 +164,7 @@ datos_gas$ServicioDeGas = ifelse(datos_gas$PoseeGasNaturalParaCalefaccion | dato
 # tiene gas natural o caso contrario qué formas tienen de
 # calefaccionar y cocinar.
 tipos_abastecimiento_calor <- c()
+tipos_abastecimiento_calor$Provincia = datos_gas$Provincia
 tipos_abastecimiento_calor$gas_natural = datos_gas$PoseeGasNaturalParaCocina | datos_gas$PoseeGasNaturalParaCalefaccion
 tipos_abastecimiento_calor$garrafa = datos_gas$PoseeGarrafaParaCocina | datos_gas$PoseeGarrafaParaCalefaccion
 tipos_abastecimiento_calor$electricidad = datos_gas$ElectricidadParaCocina | datos_gas$ElectricidadParaCalefaccion
@@ -202,15 +192,24 @@ ggplot(tipos_abastecimiento_calor_long, aes(x = Variable, fill = Valor)) +
 #tienen mayor número de hogares con servicio irregular de gas,
 #las que no tienen gas natural Relación entre dos categóricas
 
+
 datos_gas_SinMedidorDeGas <- datos_gas %>% 
   filter(ServicioDeGas %in% c('Otro abastecimiento', 'No tiene'))
 datos_gas_SinMedidorDeGas_Provincia_Table <- datos_gas_SinMedidorDeGas |>
   select('Provincia', 'ServicioDeGas')
 datos_gas_SinMedidorDeGas_Provincia_Table <- table(datos_gas_SinMedidorDeGas_Provincia_Table)
+df_tabla <- as.data.frame(datos_gas_SinMedidorDeGas_Provincia_Table)
+df_suma <- df_tabla %>%
+  group_by(ServicioDeGas) %>%
+  summarise(total = sum(Freq))
+df_ordenado <- df_tabla %>%
+  left_join(df_suma, by = "ServicioDeGas") %>%
+  arrange(desc(total), ServicioDeGas, Provincia) %>%
+  select(-total)  
+df_ordenado$ServicioDeGas <- factor(df_ordenado$ServicioDeGas, levels = unique(df_ordenado$ServicioDeGas))
+datos_gas_SinMedidorDeGas_Provincia_Table <- xtabs(Freq ~ Provincia + ServicioDeGas, data = df_ordenado)
 datos_gas_SinMedidorDeGas_Provincia_Table <- addmargins(datos_gas_SinMedidorDeGas_Provincia_Table)
 datos_gas_SinMedidorDeGas_Provincia_Table
-
-
 
 #Gráfico de barras de la variable Tiempo de Residencia bajo
 #la restricción de la variable valculada Servicio de gas. En este
