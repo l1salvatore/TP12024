@@ -22,7 +22,8 @@ colnames(datos) <- c("OrdenInicial", # Cuantitativa Discreta
                       "ElectricidadParaCocina", # Cualitativa Dicotómica
                       "PoseeLeñaCarbonParaCocina",# Cualitativa Dicotómica
                       "NoTieneParaCocina",# Cualitativa Dicotómica
-                       #TipoDeCalefaccion -> Cualitativa de respuesta múltiple
+                     
+                       #TipoDeCocina -> Cualitativa de respuesta múltiple
                      
                       "PoseeGasNaturalParaCalefaccion", # Cualitativa Dicotómica
                       "PoseeGarrafaParaCalefaccion", # Cualitativa Dicotómica
@@ -61,6 +62,14 @@ datos_base <- datos |>
                                   "No posee conexión a la red eléctrica en la vivienda" = "No tiene acceso a la red eléctrica")
       
        )
+datos_base <- datos_base %>%
+  filter(Provincia == "CABA" | Provincia == "Mendoza" | Provincia == "Río Negro" | Provincia == "Santa Cruz" | Provincia == "Jujuy" | Provincia == "Córdoba")
 
+#Tiempo de residencia en años
 
-
+ggplot(data.frame(datos_base$TiempoDeResidenciaEnAños), aes(x = datos_base$TiempoDeResidenciaEnAños)) +
+  geom_dotplot(binwidth = 1, fill = "blue", color = "black") +
+  labs(title = "Gráfico de Puntos",
+       x = "Valores",
+       y = "Frecuencia") +
+  theme_minimal()
