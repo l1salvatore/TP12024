@@ -2,6 +2,7 @@ library(dplyr)
 library(readxl)
 library(ggplot2)
 library(tidyr)
+library(reshape2)
 
 datos <- read_excel("/home/lsalvatore/Documents/FACULTAD/ProbabilidadYEstadistica/Prob_Datos_LP.xlsx", col_names = FALSE, skip=3)
 
@@ -14,7 +15,7 @@ colnames(datos) <- c("OrdenInicial", # Cuantitativa Discreta
                       "Provincia", # Cualitativa Nominal
                       "TiempoDeResidenciaEnAños", # Cuantitativa Continua
                       "FormaObtencionAgua", # Cualitativa Nominal
-                      "AguaPotable", # Cualitativa Nominal
+                      "AguaPotable", # Cualitativa Nominal Dicotómica
                       "PresionAgua", # Cualitativa Ordinal
                        #TipoDeCalefaccion -> Cualitativa de respuesta múltiple
                       "PoseeGasNaturalParaCocina", # Cualitativa Dicotómica
@@ -31,12 +32,13 @@ colnames(datos) <- c("OrdenInicial", # Cuantitativa Discreta
                       "PoseeLeñaCarbonParaCalefaccion",# Cualitativa Dicotómica
                       "NoTieneParaCalefaccion", # Cualitativa Dicotómica
                       "NoNecesitaCalefaccionar",# Cualitativa Dicotómica
+                     
                       "TipoConexionElectrica" # Cualitativa Nominal
                      )
 datos <- data.frame(datos)
 datos_base <- datos |>
     mutate(
-      AguaPotable = ifelse(AguaPotable == 'No' & !is.na(PoseeGasNaturalParaCocina), 'Si', 'No'),
+      AguaPotable = ifelse(AguaPotable == 'No' & !is.na(AguaPotable), 'Si', 'No'),
       PoseeGasNaturalParaCocina = ifelse(PoseeGasNaturalParaCocina == 'Gas natural (red de gas)' & !is.na(PoseeGasNaturalParaCocina), 1, 0),
       PoseeGarrafaParaCocina = ifelse(PoseeGarrafaParaCocina == 'Gas natural (red de gas)'& !is.na(PoseeGarrafaParaCocina), 1, 0),
       ElectricidadParaCocina = ifelse(ElectricidadParaCocina == 'Electricidad'& !is.na(ElectricidadParaCocina), 1, 0),
@@ -50,8 +52,8 @@ datos_base <- datos |>
       NoNecesitaCalefaccionar = ifelse(NoNecesitaCalefaccionar == 'No necesito calefaccionar mi vivienda en ninguna época del año' & !is.na(NoNecesitaCalefaccionar), 1, 0),
       # Recodifico las etiquetas de una variable categórica
       FormaObtencionAgua = recode(FormaObtencionAgua, "No sabe" = "No sabe",
-                       "A través de una conexión con medidor a la red pública" = "Con medidor en red",
-                       "A través de una conexión sin medidor, es decir “informalmente”, sea a través de una conexión directa a la red pública o a través de una conexión indirecta a través de un vecinx “informalmente”" = "Sin medidor, informalmente",
+                       "A través de una conexión con medidor a la red pública" = "Conexión con medidor en red",
+                       "A través de una conexión sin medidor, es decir “informalmente”, sea a través de una conexión directa a la red pública o a través de una conexión indirecta a través de un vecinx “informalmente”" = "Conexión sin medidor, informalmente",
                        "A través de un camión cisterna" = "Camión cisterna",
                        "No poseo agua dentro de la vivienda y/o tengo que acarrear desde fuera del terreno en que se ubica mi vivienda"  = "No posee agua, consume agua externa",
                        "A través de un pozo" = "Agua de pozo",
@@ -67,9 +69,100 @@ datos_base <- datos_base %>%
 
 #Tiempo de residencia en años
 
-ggplot(data.frame(datos_base$TiempoDeResidenciaEnAños), aes(x = datos_base$TiempoDeResidenciaEnAños)) +
-  geom_dotplot(binwidth = 1, fill = "blue", color = "black") +
-  labs(title = "Gráfico de Puntos",
-       x = "Valores",
-       y = "Frecuencia") +
-  theme_minimal()
+# Armamos un boxplot, para observar rapidamente un panorama donde se concentra el tiempo de residencia
+boxplot(datos_base$TiempoDeResidenciaEnAños, main = "Tiempo de Residencia en Años", ylab = "Tiempo de Residencia en Años", col = "lightblue")
+summary(datos_base$TiempoDeResidenciaEnAños)
+
+#SECCION AGUA 
+#Forma de obtención de agua
+agua <- datos_base
+agua$FormaObtencionAgua <- factor(agua$FormaObtencionAgua, levels = names(sort(table(datos_base$FormaObtencionAgua), decreasing = TRUE)))
+
+# --- GRAFICO 1 ------
+ggplot(data.frame(agua), aes(x = FormaObtencionAgua)) +
+  geom_bar(fill = "lightblue") +
+  labs(title = "Forma de Obtención del Agua",
+       x = "",
+       y = "Cantidad de hogares") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 50, hjust = 1))+
+  scale_y_continuous(breaks = seq(0, max(table(agua$FormaObtencionAgua)), by = 50))
+#El agua que consigue, es potable?
+
+# --- GRAFICO 2 ------
+pie(table(agua$AguaPotable), col = c("salmon", "lightblue"), # Cambia los colores según las categorías
+    main = "El agua es potable?")
+
+#SECCION CALEFACCION Y COCINA
+calefaccion <- data.frame(
+  GasNatural = datos_base$PoseeGasNaturalParaCalefaccion,
+  Garrafa = datos_base$PoseeGarrafaParaCalefaccion,
+  Electricidad = datos_base$ElectricidadParaCalefaccion,
+  "Leña Carbon" = datos_base$PoseeLeñaCarbonParaCalefaccion,
+  "No Tiene" = datos_base$NoTieneParaCalefaccion,
+  "No Necesita" = datos_base$NoNecesitaCalefaccionar
+)
+calefaccionfreq <- colSums(calefaccion[, -1])
+
+#barplot(calefaccionfreq , col = "lightblue",
+#        main = "Modos de Calefaccion en los hogares",
+#        xlab = "", ylab = "Cantidad de Hogares",
+#        names.arg = names(calefaccionfreq))
+
+
+cocina <- data.frame(
+  GasNatural = datos_base$PoseeGasNaturalParaCocina,
+  Garrafa = datos_base$PoseeGarrafaParaCocina,
+  Electricidad = datos_base$ElectricidadParaCocina,
+  "Leña Carbon" = datos_base$PoseeLeñaCarbonParaCocina,
+  "No Tiene" = datos_base$NoTieneParaCocina
+)
+cocinafreq <- colSums(cocina[, -1])
+#(cocinafreq , col = "lightblue",
+#        main = "Modos de cocina en los hogares",
+#        xlab = "", ylab = "Cantidad de Hogares",
+#        names.arg = names(cocinafreq))
+
+calefaccion$ID <- 1:nrow(calefaccion)  # Agregar ID para fusionar correctamente
+cocina$ID <- 1:nrow(cocina)
+ 
+# Unir tablas por ID
+datos_relacion <- merge(calefaccion, cocina, by = "ID", suffixes = c("_Calefaccion", "_Cocina"))
+
+#-----GRAFICO 3: Gas Natural -----
+tabla_contingencia <- table(
+  calefaccion = datos_relacion$GasNatural_Calefaccion,
+  cocina = datos_relacion$GasNatural_Cocina
+)
+print(tabla_contingencia)
+
+#-----GRAFICO 3: Garrafa -----
+tabla_contingencia <- table(
+  calefaccion = factor(datos_relacion$Garrafa_Calefaccion, levels = c(0,1), labels = c("No", "Sí")),
+  cocina =  factor(datos_relacion$Garrafa_Cocina, levels = c(0,1), labels = c("No", "Sí"))
+)
+
+print(tabla_contingencia)
+
+#-----GRAFICO 3: Electricidad -----
+tabla_contingencia <- table(
+  calefaccion = factor(datos_relacion$Electricidad_Calefaccion, levels = c(0,1), labels = c("No", "Sí")),
+  cocina = factor(datos_relacion$Electricidad_Cocina, levels = c(0,1), labels = c("No", "Sí"))
+)
+
+print(tabla_contingencia)
+
+#-----GRAFICO 3: LeñaCarbon -----
+tabla_contingencia <- table(
+  calefaccion = factor(datos_relacion$Leña.Carbon_Calefaccion, levels = c(0,1), labels = c("No", "Sí")),
+  cocina = factor(datos_relacion$Leña.Carbon_Cocina, levels = c(0,1), labels = c("No", "Sí"))
+)
+
+print(tabla_contingencia)
+
+#-----GRAFICO 3: No Tiene -----
+tabla_contingencia <- table(
+  calefaccion = factor(datos_relacion$No.Tiene_Calefaccion, levels = c(0,1), labels = c("No", "Sí")),
+  cocina = factor(datos_relacion$No.Tiene_Cocina, levels = c(0,1), labels = c("No", "Sí"))
+)
+
